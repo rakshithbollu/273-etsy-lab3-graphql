@@ -6,9 +6,9 @@ const Favourite = require("../../models/Favourite");
 const Cart = require("../../models/Cart");
 const Order = require("../../models/Order");
 
-const ProductResolver = {
+const ProductResolvers = {
   Query: {
-    async searchProducts({
+    async findProducts({
       keyword,
       min_price,
       max_price,
@@ -33,7 +33,7 @@ const ProductResolver = {
       }
     },
 
-    async getProductDetails({ _id }) {
+    async getProductInfo({ _id }) {
       try {
         let productdetail = await Product.findOne({ _id: _id });
         console.log(productdetail);
@@ -88,7 +88,7 @@ const ProductResolver = {
         return err;
       }
     },
-    async shopavailability({ shopname }) {
+    async shopuniquecheck({ shopname }) {
       try {
         let shopunique = await User.find({ shopname });
         if (shopunique.length !== 0) {
@@ -105,7 +105,7 @@ const ProductResolver = {
     },
   },
   Mutation: {
-    async createproduct({
+    async addproduct({
       productname,
       description,
       price,
@@ -133,7 +133,7 @@ const ProductResolver = {
         return err;
       }
     },
-    async updateproduct({
+    async editproduct({
       _id,
       productname,
       description,
@@ -181,7 +181,7 @@ const ProductResolver = {
       }
     },
 
-    async saveshopimage({ shopimage, email }) {
+    async uploadshopimage({ shopimage, email }) {
       try {
         let result = await User.findOneAndUpdate(
           { email: email },
@@ -215,4 +215,4 @@ const ProductResolver = {
     },
   },
 };
-module.exports = ProductResolver;
+module.exports = ItemResolver;
