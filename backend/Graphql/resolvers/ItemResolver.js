@@ -6,7 +6,7 @@ const Favourite = require("../../models/Favourite");
 const Cart = require("../../models/Cart");
 const Order = require("../../models/Order");
 
-const ProductResolvers = {
+const ItemResolver = {
   Query: {
     async findProducts({
       keyword,

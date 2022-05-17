@@ -5,7 +5,7 @@ const config = require("config");
 const connectDB = require("../../config/db");
 const { secret } = require("../../utils/config");
 
-const UserResolvers = {
+const UserResolver = {
   Query: {
     async userLogin({ email, password }) {
       console.log("check", email, password);
