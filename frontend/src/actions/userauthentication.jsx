@@ -14,7 +14,9 @@ import{
     CLEAR_ERRORS,
 } from './types';
 //import setAuthToken from '../utils/setAuthToken';
-
+import {USER_LOGIN_DETAILS} from "../queries";
+import { REGISTER_USER } from '../mutation';
+import { EDIT_USER } from '../mutation';
 export const loadUser = () =>async dispatch => {
     
     try {
@@ -39,16 +41,13 @@ export const loadUser = () =>async dispatch => {
 };
 
 export const signup = ({name, email, password}) => async dispatch =>{
-const config = {
-    headers: {
-        'Content-Type': 'application/json'
-    }
-}
-const body = JSON.stringify({name, email, password});
+
+const query = REGISTER_USER;
+const variables = {name, email, password};
 
 try{
-    const res = await axios.post('/api/users/',body,config);
-    if(res.data==='failure'){
+    const res = await axios.post('/graphql',{query,variables});
+    if(res.data.data.registerUser==='failure'){
         alert("email id already registered");
     }
     else{
@@ -56,7 +55,7 @@ try{
     }
     dispatch({
         type: REGISTER_SUCCESS,
-        payload: res.data
+        payload: res.data.data.registerUser
     })
 }catch(err){
     const errors = err.response.data.errors;
@@ -70,21 +69,18 @@ try{
 }
 
 export const signin = ({ email, password}) => async dispatch =>{
-    const config = {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }
-    const body = JSON.stringify({ email, password});
+    
+    const variables = { email, password};
+    const query = USER_LOGIN_DETAILS
     localStorage.setItem('email', email);
     try{
-        const res = await axios.post('/api/users/signin',body,config);
-        console.log(res.data);
-        if(res.data !== "failure"){
+        const res = await axios.post('/graphql',{query,variables});
+        
+        if(res.data.data.userLogin.message !== "failure"){
             dispatch({
                 type: LOGIN_SUCCESS,
-                payload: res.data.user,
-                payload1 : res.data.token
+                payload: res.data.data.userLogin.user,
+                payload1 : res.data.data.userLogin.token
             });            
          }
          else{
@@ -115,9 +111,8 @@ export const updateProfile = (email,name,city,mobile,address,dateofbirth,country
     try {
 
       dispatch({ type: UPDATE_PROFILE_REQUEST });
-  
-      const config = { headers: {  'Content-Type': 'application/json'} };
-      const userData = {
+  const query = EDIT_USER
+      const variables = {
         name : name,
         email : email,
         dateofbirth : dateofbirth,
@@ -128,10 +123,10 @@ export const updateProfile = (email,name,city,mobile,address,dateofbirth,country
         gender :gender,
         picture :picture
       }
-      console.log(userData);
-      const { data } = await axios.post(`/api/profile/changeprofile`, userData, config);
+  
+      const { data } = await axios.post('/graphql', {query,variables});
       
-      dispatch({ type: UPDATE_PROFILE_SUCCESS, payload: data.success });
+      dispatch({ type: UPDATE_PROFILE_SUCCESS, payload: data.data.editUser.success });
     } catch (error) {
       dispatch({
         type: UPDATE_PROFILE_FAIL,
